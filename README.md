@@ -6,7 +6,7 @@ I created this slide deck in `R Markdown` as a graduate-level class project in S
 
 This Repository Contains The Following Files:
 - .rmd file 
-- .html slides hosted on gh pages
+- .html slides hosted on gh pages ([View Here](https://jcook125.github.io/Slide-Deck-Rmd/#1))
 - .csv data file for reproduction purposes
 
 # Data Source
