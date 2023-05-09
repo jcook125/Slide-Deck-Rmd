@@ -1,0 +1,150 @@
+---
+title: "Military Expenditure and Power"
+subtitle: ""
+author: "Jack Cook"
+institute: "American University"
+date: "05/08/2023"
+output:
+  xaringan::moon_reader:
+    css: [default, metropolis, metropolis-fonts]
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+class: left, top
+
+## Project Data
+
+- This dataset includes data on six indicators that make up a state's power: military expenditure, military personnel, energy consumption, iron and steel production, urban population, and total population.
+- The data is sourced from the Correlates of War Project. The dataset used is a subset of the original dataset.
+
+- Key variables used include:
+  - Year (2000 - 2016)
+  - Military Expenditure
+  - Military Personnel
+  - Country Strength ('Strong' and 'Weak' defined as having a CINC score >.01 or <.01)
+
+Source: *Singer, J. David. 1987. “Reconstructing the Correlates of War Dataset on Material Capabilities of States, 1816-1985” International Interactions, 14: 115-32.*
+  
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+```
+
+
+---
+class: left, top
+
+## Distribution of Military Personnel Data 2000 - 2016
+
+```{css echo = FALSE}
+.left-column {
+  float: left;
+  width: 35%;
+  color: black;
+}
+.right-column {
+  float: right;
+  width: 60%;
+  height: 100%;
+  padding-top: 0;
+}
+```
+
+```{r, include=FALSE}
+  knitr::opts_chunk$set(
+    echo = FALSE, dev = 'png', message = FALSE, warning = FALSE, 
+    fig.width = 5, fig.asp=0.650, fig.align = 'left', out.width = "100%"
+  )
+library(tidyverse)
+library(xaringan)
+library(scales)
+library(knitr)
+library(wesanderson)
+NMC = read.csv('NMC-60-abridged.csv', na = '-9')
+NMC2 = subset(NMC, year >= 2000)
+
+```
+
+
+.right-column[
+```{r, fig.retina=2}
+options(scipen = 999)
+
+ggplot(NMC2, aes(x = milper)) + 
+  geom_histogram(color = 'white', fill = '#E1BD6D') + 
+  scale_x_log10(labels = comma) +
+  scale_y_continuous(expand = expansion(mult = c(0,0.05))) + 
+  labs( title = "Military Personnel by Country 2000 - 2016", y = "Count", 
+        x = "Military Personnel (Thousands)" ) + 
+  theme_minimal() + 
+  theme(panel.grid.minor.x = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        panel.grid.major = element_blank()) + 
+  geom_vline(xintercept = 22) + 
+  annotate("text", x = 62, y = 210, label="Median = 22K", angle = 0)
+
+
+```
+]
+
+.left-column[
+- The maximum country military personnel is 2.81 million
+
+- The top 25% of total state military personnel in the data is greater than 84,000
+
+- Median state military personnel is 22,000
+]
+---
+class: left, top
+
+## Military Expenditure: Strong vs. Weak Countries (2000 - 2016)
+
+.right-column[
+```{r, fig.retina=2}
+
+library(patchwork)
+NMC6 = NMC2 %>% mutate(PowerGroups = ifelse(cinc > .01, 'Strong', 'Weak')) 
+
+regular = ggplot(NMC6, aes(x=year, y=milex)) +
+  geom_col(fill = '#0B775E') +
+  scale_y_continuous(expand = expansion(mult = c(0,0.05)), 
+                     labels = scales::dollar_format()) + 
+  labs(title = 'Global Annual Military Expenditure', 
+       y = '', x = '') +
+  theme_minimal() + 
+  theme(panel.grid.minor.x = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        panel.grid.major.x = element_blank())
+
+wrapped = ggplot(NMC6, aes(x=year, y=milex)) +
+  geom_col(aes(fill = PowerGroups)) +
+  scale_y_continuous(labels = scales::dollar_format()) +
+  facet_wrap(~PowerGroups, ncol = 2) + 
+  scale_fill_manual(labels = c("Strong", 
+                                 "Weak"),
+                      values = c("#35274A","#F2300F")) +
+  labs(x = "", y = "") +
+  theme_minimal() + 
+  theme(
+    legend.position = "none",
+    panel.grid.minor = element_blank(),
+    panel.grid.major.x = element_blank(),
+    strip.text = element_text(face = "bold"))
+
+regular / wrapped
+
+```
+]
+
+.left-column[
+- Mean Military Expenditure:
+  - Weak countries: 1.5 billion USD
+  - Strong countries: 54.3 billion USD
+  
+- In the year 2000, military expenditures totaled 823 billion USD
+
+- In the year 2016, military expenditures totaled 1.5 trillion USD
+]
+
